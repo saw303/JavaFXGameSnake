@@ -45,7 +45,7 @@ public class SnakeGameApp extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(64 * 15);
         settings.setHeight(64 * 15);
-        settings.setTitle("Viks Snake Game");
+        settings.setTitle("Joshuas Snake Game");
         settings.setTicksPerSecond(10);
     }
 
@@ -56,8 +56,8 @@ public class SnakeGameApp extends GameApplication {
      */
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("score", 0);
-        vars.put("lives", 5);
+        vars.put(Variables.SCORE, 0);
+        vars.put(Variables.LIVES, 5);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class SnakeGameApp extends GameApplication {
         livesValue.setTranslateX(getAppWidth() - 30);
         livesValue.setTranslateY(20);
 
-        scoreValue.textProperty().bind(getGameState().intProperty("score").asString());
-        livesValue.textProperty().bind(getGameState().intProperty("lives").asString());
+        scoreValue.textProperty().bind(getGameState().intProperty(Variables.SCORE).asString());
+        livesValue.textProperty().bind(getGameState().intProperty(Variables.LIVES).asString());
 
         getGameScene().addUINodes(scoreLabel, scoreValue, livesLabel, livesValue);
     }
@@ -108,7 +108,7 @@ public class SnakeGameApp extends GameApplication {
         });
 
         // call to mock
-        
+
 //        getExecutor().startAsyncFX(() -> {
 //            getInput().mockKeyPress(KeyCode.UP);
 //        });

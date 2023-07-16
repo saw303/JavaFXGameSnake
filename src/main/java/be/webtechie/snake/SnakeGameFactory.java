@@ -3,6 +3,7 @@ package be.webtechie.snake;
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.texture;
 
+import be.webtechie.snake.component.AppleComponent;
 import be.webtechie.snake.component.SnakeHeadComponent;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.components.AutoRotationComponent;
@@ -25,7 +26,7 @@ public class SnakeGameFactory implements EntityFactory {
      * Types of objects we are going to use in our game.
      */
     public enum EntityType {
-        SNAKE_HEAD, SNAKE_BODY
+        SNAKE_HEAD, SNAKE_BODY, APPLE
     }
 
     // TODO: safe actions plugin
@@ -53,6 +54,7 @@ public class SnakeGameFactory implements EntityFactory {
                 .collidable()
                 .with(new AutoRotationComponent())
                 .with(new SnakeHeadComponent())
+                .with(new AppleComponent())
                 .build();
     }
 
@@ -61,6 +63,16 @@ public class SnakeGameFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(EntityType.SNAKE_BODY)
                 .viewWithBBox(texture(FXGLMath.random(textureNames).get(), 32, 32))
+                .collidable()
+                .with(new AutoRotationComponent())
+                .build();
+    }
+
+    @Spawns("apple")
+    public Entity newApple(SpawnData data) {
+        return entityBuilder(data)
+                .type(EntityType.APPLE)
+                .viewWithBBox(texture("in-love.png", 32, 32))
                 .collidable()
                 .with(new AutoRotationComponent())
                 .build();

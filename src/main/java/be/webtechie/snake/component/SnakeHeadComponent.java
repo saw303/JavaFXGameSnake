@@ -1,5 +1,9 @@
 package be.webtechie.snake.component;
 
+import be.webtechie.snake.SnakeGameFactory;
+import be.webtechie.snake.Variables;
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
@@ -7,11 +11,22 @@ import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static be.webtechie.snake.SnakeGameFactory.EntityType.SNAKE_HEAD;
+import static be.webtechie.snake.Variables.LIVES;
+import static be.webtechie.snake.Variables.PREVIOUS_POSITION;
+import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
+import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
+import static com.almasb.fxgl.dsl.FXGL.inc;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
+
 
 public class SnakeHeadComponent extends Component {
 
-    private Point2D direction = new Point2D(1, 0);
+    private static final Point2D DIRECTION_UP = new Point2D(0, -1);
+    private static final Point2D DIRECTION_DOWN = new Point2D(0, 1);
+    private static final Point2D DIRECTION_LEFT = new Point2D(-1, 0);
+    private static final Point2D DIRECTION_RIGHT = new Point2D(1, 0);
+    private Point2D direction = DIRECTION_RIGHT;
 
     // head - body - ...
     private List<Entity> bodyParts = new ArrayList<>();
@@ -19,13 +34,13 @@ public class SnakeHeadComponent extends Component {
     @Override
     public void onAdded() {
         bodyParts.add(entity);
-
-        entity.setProperty("prevPos", entity.getPosition());
+        entity.setProperty(PREVIOUS_POSITION, entity.getPosition());
     }
 
     @Override
     public void onUpdate(double tpf) {
-        entity.setProperty("prevPos", entity.getPosition());
+        Point2D previousPosition = entity.getPosition();
+        entity.setProperty(PREVIOUS_POSITION, previousPosition);
         entity.translate(direction.multiply(32));
 
         checkForBounds();
@@ -36,8 +51,16 @@ public class SnakeHeadComponent extends Component {
 
             Point2D prevPos = prevPart.getObject("prevPos");
 
-            part.setProperty("prevPos", part.getPosition());
+            part.setProperty(PREVIOUS_POSITION, part.getPosition());
             part.setPosition(prevPos);
+        }
+
+        System.out.println("Current pos: " + previousPosition);
+
+        Entity apple = FXGL.byType(SnakeGameFactory.EntityType.APPLE).get(0);
+        if (apple.getPosition().equals(previousPosition)) {
+            FXGL.byType(SNAKE_HEAD).get(0).getComponent(SnakeHeadComponent.class).grow();
+            apple.translate(FXGLMath.random(0, getAppWidth() - 20), FXGLMath.random(0, getAppHeight() - 20));
         }
     }
 
@@ -56,7 +79,7 @@ public class SnakeHeadComponent extends Component {
     }
 
     public void die() {
-        inc("lives", -1);
+        inc(LIVES, -1);
 
         // clean up body parts, apart from head
         bodyParts.stream()
@@ -71,27 +94,27 @@ public class SnakeHeadComponent extends Component {
     }
 
     public void up() {
-        direction = new Point2D(0, -1);
+        direction = DIRECTION_UP;
     }
 
     public void down() {
-        direction = new Point2D(0, 1);
+        direction = DIRECTION_DOWN;
     }
 
     public void left() {
-        direction = new Point2D(-1, 0);
+        direction = DIRECTION_LEFT;
     }
 
     public void right() {
-        direction = new Point2D(1, 0);
+        direction = DIRECTION_RIGHT;
     }
 
     public void grow() {
-        inc("score", +1);
+        inc(Variables.SCORE, 1);
 
         var lastBodyPart = bodyParts.get(bodyParts.size() - 1);
 
-        Point2D pos = lastBodyPart.getObject("prevPos");
+        Point2D pos = lastBodyPart.getObject(PREVIOUS_POSITION);
 
         var body = spawn("snakeBody", pos);
 
@@ -101,7 +124,7 @@ public class SnakeHeadComponent extends Component {
     public void log() {
         bodyParts.forEach(part -> {
             System.out.println(part.getPosition());
-            System.out.println(part.getObject("prevPos").toString());
+            System.out.println(part.getObject(PREVIOUS_POSITION).toString());
         });
     }
 }
