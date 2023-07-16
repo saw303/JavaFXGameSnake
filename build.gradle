@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    api 'com.github.almasb:fxgl:11.13'
+}
+
+group = 'io.wangler'
+version = '0.0.1'
+description = 'snake'
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}

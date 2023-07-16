@@ -4,4 +4,7 @@
 /system/
 /snake.iml
 
+/.gradle/
+/build/
+
 hs*.log
