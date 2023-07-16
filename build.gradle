@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id "com.diffplug.spotless" version "6.19.0"
 }
 
 dependencies {
@@ -10,13 +11,25 @@ dependencies {
 group = 'io.wangler'
 version = '0.0.1'
 description = 'snake'
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
     publications {
         maven(MavenPublication) {
             from(components.java)
         }
+    }
+}
+
+spotless {
+    java {
+        removeUnusedImports()
+
+        target project.fileTree(project.projectDir) {
+            include 'src/*/java/**/*.java'
+        }
+
+        googleJavaFormat()
     }
 }
 
